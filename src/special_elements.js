@@ -28,12 +28,12 @@ export function loadSpecialElement(branch, element) {
     // item displays look very silly without textures
     if (element['type'] === 'item_display') {
         return Promise.resolve(
-        <div className="item_display">
-            {element['item'] ? <Ingredient symbol={'Item'} value={element['item']}/>
-                : element['items'] ? element['items'].map(item => <Ingredient symbol={'Item'} value={item}/>)
-                    : null
-            }
-        </div>);
+            <div className="item_display">
+                {element['item'] ? <Ingredient symbol={'Item'} value={element}/>
+                    : element['items'] ? element['items'].map(item => <Ingredient symbol={'Item'} value={item}/>)
+                        : null
+                }
+            </div>);
     }
     return new Promise((resolve, reject) => resolve(null));
 }
