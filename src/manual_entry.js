@@ -9,9 +9,9 @@ const re_link = /<link;(\w+);([^;]*?)(?:;(\w*))?>/g;
 const re_keybind = /<keybind;([\w.]+)>/g;
 const re_formatting = /§([^r])(.+?)§r/g;
 
-const re_config_int = /<config;i;([^;]+)>/g
-const re_config_bool = /<config;b;([^;]+);([^;]+);([^;]*)>/g
-const re_config_int_array = /<config;iA;([^;]+)(?:;([^;]*))?>/g
+const re_config_int = /<config;i;([^;>]+)>/g
+const re_config_bool = /<config;b;([^;>]+);([^;>]+);([^;>]*)>/g
+const re_config_int_array = /<config;iA;([^;>]+)(?:;([^;>]*))?>/g
 
 function replaceJSX(input, pattern, fn) {
     if (input instanceof Array)
