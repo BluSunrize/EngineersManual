@@ -4,7 +4,7 @@ import {addTranslationMultiple, translate, translateIEItem, upperCaseName} from 
 import {getRecipePath, MOD_ID} from "./resources";
 
 const SPECIAL_ELEMENT_HEIGHTS = {
-    crafting: (e) => 'recipe' in e?6: 'recipes' in e?6*e['recipes'].length: 1,
+    crafting: (e) => 'recipe' in e?8: 'recipes' in e?8*e['recipes'].length: 1,
 };
 
 export function loadSpecialElement(branch, element) {
