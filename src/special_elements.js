@@ -1,10 +1,11 @@
 import React from "react";
 import {Tooltip} from "./generic_elements";
-import {addTranslationMultiple, translate, translateIEItem, upperCaseName} from "./localization";
+import {translateIEItem, upperCaseName} from "./localization";
 import {getRecipePath, MOD_ID} from "./resources";
 
 const SPECIAL_ELEMENT_HEIGHTS = {
-    crafting: (e) => 'recipe' in e?8: 'recipes' in e?8*e['recipes'].length: 1,
+    crafting: (e) => 'recipe' in e ? 8 : 'recipes' in e ? 8 * e['recipes'].length : 1,
+    item_display: (e) => 4,
 };
 
 export function loadSpecialElement(branch, element) {
@@ -23,6 +24,16 @@ export function loadSpecialElement(branch, element) {
                     return Recipe.loadRecipe(branch, recipe);
             }));
         }
+    }
+    // item displays look very silly without textures
+    if (element['type'] === 'item_display') {
+        return Promise.resolve(
+        <div className="item_display">
+            {element['item'] ? <Ingredient symbol={'Item'} value={element['item']}/>
+                : element['items'] ? element['items'].map(item => <Ingredient symbol={'Item'} value={item}/>)
+                    : null
+            }
+        </div>);
     }
     return new Promise((resolve, reject) => resolve(null));
 }

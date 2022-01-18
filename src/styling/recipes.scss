@@ -76,8 +76,8 @@ div.item {
 
   & span.count {
     position: absolute;
-    margin-top: 4%;
-    margin-left: 1%;
+    margin-top: 3vmin;
+    margin-left: 1vmin;
     font-size: 80%;
   }
 
@@ -95,5 +95,17 @@ div.item {
     display: block;
     position: fixed;
     overflow: hidden;
+  }
+}
+
+div.item_display {
+  display: flex;
+  justify-content: center;
+
+  & div.item {
+    margin: 1vmin;
+    height: 9vmin;
+    width: 9vmin;
+    text-align: center;
   }
 }
