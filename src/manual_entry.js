@@ -127,8 +127,13 @@ export class ManualEntry extends React.Component {
 
         // replace all links
         input = replaceJSX(input, re_link, (match, link, text, anchor) => {
-            verifyEntryExists(this.props.branch, this.props.lang, link);
-            return <ManualLink key={link+'?'+anchor} link={link} anchor={anchor} text={this.handleReplacements(text)}/>;
+            // local reference
+            if (link === 'this')
+                link = ''
+            else
+                verifyEntryExists(this.props.branch, this.props.lang, link);
+            return <ManualLink key={link + '?' + anchor} link={link} anchor={anchor}
+                               text={this.handleReplacements(text)}/>;
         });
 
         // replace all instances of formatting with nested spans
