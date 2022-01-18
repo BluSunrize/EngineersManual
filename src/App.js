@@ -49,9 +49,10 @@ function loadCategory(branch, lang, key, category, entryPromises, toplevel) {
 function loadEntry(branch, lang, key) {
     let url_data = `${getManualPath(branch)}${key}.json`;
     let url_text = `${getManualPath(branch)}${lang}/${key}.txt`;
+    let url_text_backup = `${getManualPath(branch)}${DEFAULT_LANGUAGE}/${key}.txt`;
     return Promise.all([
         fetch(url_data).then(res => res.json()),
-        fetch(url_text).then(res => res.text()),
+        fetch(url_text).then(res => res.status === 200 ? res.text() : fetch(url_text_backup).then(res => res.text())),
     ]).then(values => {
         let raw_text = values[1].split('\n');
         let titles = raw_text.splice(0, 2);
@@ -143,7 +144,11 @@ class Manual extends React.Component {
         const getFiles = async () => {
             // clean up
             clearManual();
-            // get translation file
+            // get english default translation file
+            await fetch(`${getAssetPath(branch)}lang/${DEFAULT_LANGUAGE}.json`)
+                .then(res => res.json())
+                .then(out => addTranslationMultiple(out));
+            // get specific translation file
             await fetch(`${getAssetPath(branch)}lang/${lang}.json`)
                 .then(res => res.json())
                 .then(out => addTranslationMultiple(out));
