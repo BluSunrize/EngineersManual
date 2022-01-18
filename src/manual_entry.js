@@ -1,11 +1,8 @@
 import React from "react";
 import reactStringReplace from "react-string-replace";
 import {Anchor, ConfigBool, ConfigInt, ConfigIntArray, KeyBind, ManualLink, PageBreak} from "./generic_elements";
-import {getSpecialHeight, loadSpecialElement} from "./special_elements";
-import {DEFAULT_BRANCH, reactSetStateWrapper} from "./resources";
+import {reactSetStateWrapper} from "./resources";
 import {verifyEntryExists} from "./App";
-import {useParams} from "react-router-dom";
-import {DEFAULT_LANGUAGE} from "./localization";
 
 const re_anchor = /<&(\w+)>/g;
 const re_link = /<link;(\w+);([^;]*?)(?:;(\w*))?>/g;
@@ -114,8 +111,10 @@ export class ManualEntry extends React.Component {
 
             console.log('prepped pages', pages);
 
-            // filter out empties
-            pages = pages.filter(p => p.length > 0).map(p => <div className="pagecontent">{p}</div>);
+            // filter out empties, wrap in divs
+            pages = pages
+                .filter(p => p.length > 0 && p.some(e => !isReactElement(e, <br/>)))
+                .map(p => <div className="pagecontent">{p}</div>);
 
             reactSetStateWrapper(this, {pages: pages});
         }
