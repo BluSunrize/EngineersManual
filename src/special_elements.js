@@ -161,7 +161,16 @@ function Ingredient(props) {
     if (!present)
         return <div className="item empty"/>;
     else {
-        return <div className="item">
+        return <div className="item" onMouseMove={
+            event => {
+                let tooltip = event.currentTarget.querySelector('.tooltip');
+                if(tooltip) {
+                    tooltip.style.position = 'fixed';
+                    tooltip.style.top = `calc(${event.clientY}px + 2vmin)`;
+                    tooltip.style.left = event.clientX+'px';
+                }
+            }
+        }>
             <span className="symbol">{props.symbol}</span>
             {ingredient['count'] && <span className="count">{ingredient['count']}</span>}
             <Tooltip text={ingredientTooltip(ingredient)}/>
