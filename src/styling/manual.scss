@@ -1,0 +1,318 @@
+@import 'constants';
+
+$mobile-aspect-ratio: 2/2.75;
+
+:root {
+  font-size: 4vmin; //font size relative to the screen height
+
+  @media (max-aspect-ratio: $mobile-aspect-ratio) {
+    font-size: 5.5vmin; //for phones
+  }
+
+  // no blurry pictures here!
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+
+  // Scrollbar handling for firefox
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--highlight-color) var(--text-color);
+  }
+
+  // And for all other browsers
+  *::-webkit-scrollbar {
+    background: var(--text-color);
+    width: 0.5vmin;
+
+    &-thumb {
+      background-color: var(--highlight-color);
+    }
+  }
+
+}
+
+@font-face {
+  font-family: 'Unifont';
+  src: url('../assets/unifont-14.0.01.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.hidden {
+  display: none !important;
+}
+
+body {
+  font-family: 'Unifont';
+  font-weight: normal;
+  font-style: normal;
+  color: var(--text-color);
+  height: 98vmin;
+}
+
+button {
+  font-size: 5vmin;
+  background-color: Transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+}
+
+/* Spinner */
+
+#please_wait {
+  margin: auto auto 60%;
+  text-align: center;
+}
+
+#please_wait .clippy {
+  background-image: url('../assets/please_wait.png');
+  background-size: cover;
+  width: 20vmin;
+  height: 20vmin;
+  margin: auto;
+}
+
+#please_wait .clippy .hand {
+  width: 0.4vmin;
+  height: 2.5vmin;
+  top: 42%;
+  left: 66%;
+  position: relative;
+  transform-origin: bottom;
+  background-color: var(--highlight-color);
+  animation: spinner 5s linear 0s infinite;
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* top left back button */
+button.off {
+  pointer-events: none;
+  opacity: 0;
+}
+
+#back_button {
+  color: var(--text-color);
+  opacity: 60%;
+  position: absolute;
+  z-index: 40;
+  margin-left: -3vmin;
+  margin-top: -1vmin;
+}
+
+.manual {
+  // background values
+  background-image: url('../assets/manual.png');
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: border-box;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: 4vmin 16vmin 6vmin 14vmin;
+  width: 60vmin;
+  height: 86vmin;
+  margin: 2vmin auto;
+
+  @media (max-aspect-ratio: $mobile-aspect-ratio) {
+    padding: 4vmin 7vmin 6vmin 6vmin;
+    background-position-x: -12vmin;
+    background-size: cover;
+    height: 123vmin;
+    width: 87vmin;
+  }
+}
+
+.content {
+  // content render properties
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: auto;
+
+  button.back {
+    width: 10%;
+    height: auto;
+    position: absolute;
+    left: -5%;
+
+    &::before {
+      content: '🡄';
+      color: var(--text-color);
+    }
+
+    &:hover::before {
+      color: var(--highlight-color);
+    }
+  }
+}
+
+.page {
+  overflow: hidden;
+}
+
+/* Entry List */
+.content ul.entry-list {
+  //height: 100%;
+  list-style: none;
+  overflow: auto;
+
+  .category a::before {
+    content: "⯈";
+    opacity: 60%;
+  }
+
+}
+
+.content ul li:hover {
+  color: var(--highlight-color);
+  cursor: pointer;
+}
+
+/* Headlines */
+.content h2,
+.content h3 {
+  text-align: center;
+  color: var(--title-color);
+  text-shadow: 0.3vmin 0.3vmin var(--title-shadow-color);
+  margin: 0;
+}
+
+.content h2 {
+  font-size: 105%;
+  font-weight: bold;
+}
+
+.content h3 {
+  font-size: 100%;
+  font-weight: initial;
+  margin: 0 0 1%;
+}
+
+
+/* Page Text */
+.pagetext {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--highlight-color) var(--text-color);
+}
+
+.pagetext::-webkit-scrollbar-track {
+  background: var(--text-color);
+}
+
+.pagetext::-webkit-scrollbar-thumb {
+  background-color: var(--highlight-color);
+}
+
+/* Language & Branch */
+.manual > header {
+  position: absolute;
+  bottom: 9vmin;
+}
+
+
+/* Footer */
+footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 89vmin;
+  width: 60vmin;
+
+  & button::before {
+    color: var(--text-color);
+    opacity: 60%;
+    position: relative;
+    top: -3vmin;
+    font-size: 7vmin;
+  }
+
+  & button.page_prev::before {
+    content: '⮨';
+    left: -1vmin;
+  }
+
+  & button.page_next::before {
+    content: '⮩';
+    left: 1vmin;
+  }
+
+
+  @media (max-aspect-ratio: $mobile-aspect-ratio) {
+    top: 123vmin;
+    width: 87vmin;
+  }
+}
+
+/* Pages */
+div.pages p {
+  margin-bottom: 0;
+}
+
+/* Links */
+.content a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.content a:hover {
+  color: var(--highlight-color);
+  cursor: pointer;
+}
+
+/* Text elements */
+@import 'text_elements';
+
+/* Formatting */
+@import 'formatting';
+
+/* Special elements */
+@import 'recipes';
+
+
+/* Tooltips */
+
+.tooltip-hider {
+  & + .tooltip {
+    display: none;
+  }
+
+  &:hover + .tooltip {
+    display: block;
+    margin-top: 5%;
+  }
+}
+
+.tooltip {
+  background: #110211;
+  border: 5px solid #120211;
+  outline: 5px solid #25015c;
+  outline-offset: -10px;
+  padding: 10px 15px;
+  color: var(--mc-white);
+  text-align: left;
+  overflow-wrap: anywhere;
+
+  position: fixed;
+  max-width: 50%;
+  z-index: 10;
+
+  & *:not(:first-child) {
+    color: var(--mc-gray);
+  }
+
+  & span.domain {
+    color: var(--mc-dark-blue);
+  }
+}

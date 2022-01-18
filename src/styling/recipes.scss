@@ -1,0 +1,99 @@
+.recipe {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60vmin;
+  height: 23vmin;
+  margin: auto auto 1vmin;
+
+  &.errormsg {
+    font-size: small;
+  }
+}
+
+.multi_recipe {
+  display: flex;
+
+  & button.recipe_prev::before {
+    content: '🠼';
+    color: var(--text-color);
+  }
+
+  & button.recipe_next::before {
+    content: '🠾';
+    color: var(--text-color);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-auto-rows: 1fr;
+
+  &.col2 {
+    grid-template-columns: 50% 50%;
+    width: 27%;
+  }
+
+  &.col3 {
+    grid-template-columns: 33% 33% 33%;
+    width: 40%;
+  }
+
+  &::before {
+    content: '';
+    width: 0;
+    padding-bottom: 100%;
+    grid-row: 1 / 1;
+    grid-column: 1 / 1;
+  }
+
+  & > *:first-child {
+    grid-row: 1 / 1;
+    grid-column: 1 / 1;
+  }
+}
+
+div.arrow, div.output {
+  margin: auto 5%;
+}
+
+div.arrow::before {
+  content: '🡆';
+  color: rgba(0, 0, 0, 0.1);
+  vertical-align: super;
+  font-size: xxx-large;
+}
+
+div.item {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 2px;
+
+  & span.symbol {
+    position: relative;
+    top: 15%;
+  }
+
+  & span.count {
+    position: absolute;
+    margin-top: 4%;
+    margin-left: 1%;
+    font-size: 80%;
+  }
+
+  div.output & {
+    width: 100%;
+    height: auto;
+    padding: 69% 104%;
+  }
+
+  & .tooltip {
+    display: none;
+  }
+
+  &:hover .tooltip {
+    display: block;
+    position: fixed;
+    overflow: hidden;
+  }
+}

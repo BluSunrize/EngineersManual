@@ -1,0 +1,74 @@
+span.keybind {
+  overflow: hidden;
+  background-color: var(--background-highlight);
+  padding: 0 8px;
+  box-shadow: var(--box-shadow);
+  font-size: smaller;
+}
+
+a.text-link {
+  text-decoration: underline 15%;
+}
+
+span.config-helper {
+  position: absolute;
+  left: 3%;
+  opacity: 50%;
+  cursor: pointer;
+
+  &:hover ~ span.config {
+    background: rgba(0, 0, 0, 0.1);
+  }
+}
+
+// custom select boxes
+.select-dropdown {
+  display: flex;
+  align-items: baseline;
+
+  .select-header {
+    right: 0;
+
+    padding-left: 2vmin;
+    padding-right: 1vmin;
+    background-color: var(--background-highlight);
+    box-shadow: var(--box-shadow);
+    cursor: pointer;
+
+    &::after {
+      content: '🠻';
+      left: 0.5vmin;
+      position: relative;
+    }
+
+    &.active::after {
+      content: '🠹';
+    }
+  }
+
+  .select-options {
+    display: none;
+    // positioning
+    position: absolute;
+    right: 0;
+    height: 13vmin;
+    margin-top: -15vmin;
+    z-index: 10;
+
+    // styling
+    list-style: none;
+    background: var(--background-highlight);
+    padding: 1vmin;
+    border: var(--text-color) 1px solid;
+    overflow-y: scroll;
+
+    li:hover {
+      cursor: pointer;
+      color: var(--highlight-color);
+    }
+  }
+
+  .select-header.active + .select-options {
+    display: initial;
+  }
+}
