@@ -31,20 +31,10 @@
 
   &.col2 {
     grid-template-columns: 50% 50%;
-    width: 27%;
   }
 
   &.col3 {
     grid-template-columns: 33% 33% 33%;
-    width: 40%;
-  }
-
-  &::before {
-    content: '';
-    width: 0;
-    padding-bottom: 100%;
-    grid-row: 1 / 1;
-    grid-column: 1 / 1;
   }
 
   & > *:first-child {
@@ -68,6 +58,8 @@ div.item {
   text-align: center;
   background: rgba(0, 0, 0, 0.1);
   margin: 2px;
+  width: 8vmin;
+  height: 8vmin;
 
   & span.symbol {
     position: relative;
@@ -76,15 +68,9 @@ div.item {
 
   & span.count {
     position: absolute;
-    margin-top: 3vmin;
+    margin-top: 5vmin;
     margin-left: 1vmin;
     font-size: 80%;
-  }
-
-  div.output & {
-    width: 100%;
-    height: auto;
-    padding: 69% 104%;
   }
 
   & .tooltip {
@@ -96,6 +82,10 @@ div.item {
     position: fixed;
     overflow: hidden;
   }
+}
+
+div.blueprint-ingredient {
+  margin-right: 5vmin;
 }
 
 div.item_display {

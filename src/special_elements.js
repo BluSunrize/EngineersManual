@@ -5,11 +5,12 @@ import {getAssetPath, getRecipePath, MOD_ID} from "./resources";
 
 const SPECIAL_ELEMENT_HEIGHTS = {
     crafting: (e) => 'recipe' in e ? 7 : 'recipes' in e ? 7 * e['recipes'].length : 1,
-    item_display: (e) => 4,
+    item_display: () => 4,
     image: (e) => 'images' in e ? e['images'].reduce((acc, image) => {
         let scale = 55 / image['uSize'];
         return acc + image['vSize'] * scale * 0.25;
     }, 0) : 1,
+    blueprint: () => 7,
 };
 
 export function loadSpecialElement(branch, element) {
@@ -57,6 +58,15 @@ export function loadSpecialElement(branch, element) {
                 )}
             </div>);
     }
+    // blueprints are just shapeless recipes but easier
+    if (element['type'] === 'blueprint') {
+        //single recipe
+        if (element['recipe'])
+            return Blueprint.loadRecipes(branch, [element['recipe']]);
+        //multiple recipes
+        else if (element['recipes'])
+            return Blueprint.loadRecipes(branch, element['recipes']);
+    }
     return new Promise((resolve, reject) => resolve(null));
 }
 
@@ -70,6 +80,8 @@ export function getSpecialHeight(element) {
 }
 
 function ingredientTooltip(ingredient) {
+    if (ingredient['base_ingredient'])
+        return ingredientTooltip(ingredient['base_ingredient'])
     if (ingredient['tag'])
         return (<>
             <span>Tag:</span><br/>
@@ -118,7 +130,7 @@ class Recipe extends React.Component {
     static loadRecipe(branch, key) {
         return fetch(`${getRecipePath(branch)}${key}.json`)
             .then(res => res.json())
-            .then(out => <Recipe name={key} data={out}/>);
+            .then(out => <Recipe name={key} key={key} data={out}/>);
     }
 
     static buildShapedRecipe(name, data) {
@@ -179,7 +191,7 @@ class MultiRecipe extends React.Component {
 
 function Ingredient(props) {
     let ingredient = props['value'];
-    let present = ingredient && (ingredient['item'] || ingredient['tag']);
+    let present = ingredient && (ingredient['item'] || ingredient['tag'] || ingredient['base_ingredient']);
     if (!present)
         return <div className="item empty"/>;
     else {
@@ -197,5 +209,53 @@ function Ingredient(props) {
             {ingredient['count'] && <span className="count">{ingredient['count']}</span>}
             <Tooltip text={ingredientTooltip(ingredient)}/>
         </div>;
+    }
+}
+
+class Blueprint extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            recipeIdx: 0
+        };
+    }
+
+    render() {
+        return <div className="blueprint multi_recipe">
+            <button
+                className={"recipe_prev" + (this.state.recipeIdx > 0 ? '' : ' off')}
+                onClick={() => this.setState({recipeIdx: this.state.recipeIdx - 1})}/>
+            {this.props.recipes[this.state.recipeIdx]}
+            <button
+                className={"recipe_next" + (this.state.recipeIdx < this.props.recipes.length - 1 ? '' : ' off')}
+                onClick={() => this.setState({recipeIdx: this.state.recipeIdx + 1})}/>
+        </div>;
+    }
+
+    static loadRecipes(branch, recipes) {
+        return Promise.all(recipes.map(
+            obj => obj['item'].split(':').pop()
+        ).map(
+            key => fetch(`${getRecipePath(branch)}blueprint/${key}.json`)
+                .then(res => res.json())
+                .then(out => Blueprint.buildRecipe(key, out))
+        )).then(values => <Blueprint recipes={values}/>);
+    }
+
+    static buildRecipe(name, data) {
+        let cols = data.inputs.length === 1 ? 1 : data.inputs.length < 5 ? 2 : 3;
+        return (
+            <div className="recipe" name={name}>
+                <div className="blueprint-ingredient">
+                    <Ingredient symbol={'B'} value={{item: "immersiveengineering:blueprint"}}/>
+                </div>
+                <div className={'grid col' + cols}>
+                    {data.inputs.map((e, i) => <Ingredient key={i} symbol={i} value={e}/>)}
+                </div>
+                <div className="output">
+                    <Ingredient symbol={'?'} value={data.result}/>
+                </div>
+            </div>
+        );
     }
 }
