@@ -16,12 +16,12 @@
 
   & button.recipe_prev::before {
     content: '🠼';
-    color: var(--text-color);
+    color: $text-color;
   }
 
   & button.recipe_next::before {
     content: '🠾';
-    color: var(--text-color);
+    color: $text-color;
   }
 }
 
@@ -108,7 +108,7 @@ div.item_display {
 
   .embedded_image {
     width: 55vmin;
-    border: 1vmin var(--highlight-color) solid;
+    border: 1vmin $highlight-color solid;
     margin: 0.5vmin;
   }
 

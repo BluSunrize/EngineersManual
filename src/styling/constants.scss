@@ -1,28 +1,26 @@
-:root {
-  /* Custom Colors */
-  --text-color: #555555;
-  --background-highlight: #b7ad9b;
-  --box-shadow: inset 0px 0px 0px 3px #857e71;
-  --highlight-color: #d4804a;
-  --title-color: #f78034;
-  --title-shadow-color: #341805;
+/* Custom Colors */
+$text-color: #555555;
+$background-highlight: #b7ad9b;
+$box-shadow: inset 0px 0px 0px 3px #857e71;
+$highlight-color: #d4804a;
+$title-color: #f78034;
+$title-shadow-color: #341805;
 
-  /* Minecraft Colors */
-  --mc-black: #000000;
-  --mc-dark-blue: #0000AA;
-  --mc-dark-green: #00AA00;
-  --mc-dark-aqua: #00AAAA;
-  --mc-dark-red: #AA0000;
-  --mc-dark-purple: #AA00AA;
-  --mc-gold: #FFAA00;
-  --mc-gray: #AAAAAA;
-  --mc-dark-gray: #555555;
-  --mc-blue: #5555FF;
-  --mc-green: #55FF55;
-  --mc-aqua: #55FFFF;
-  --mc-red: #FF5555;
-  --mc-light-purple: #FF55FF;
-  --mc-yellow: #FFFF55;
-  --mc-white: #FFFFFF;
-}
+/* Minecraft Colors */
+$mc-black: #000000;
+$mc-dark-blue: #0000AA;
+$mc-dark-green: #00AA00;
+$mc-dark-aqua: #00AAAA;
+$mc-dark-red: #AA0000;
+$mc-dark-purple: #AA00AA;
+$mc-gold: #FFAA00;
+$mc-gray: #AAAAAA;
+$mc-dark-gray: #555555;
+$mc-blue: #5555FF;
+$mc-green: #55FF55;
+$mc-aqua: #55FFFF;
+$mc-red: #FF5555;
+$mc-light-purple: #FF55FF;
+$mc-yellow: #FFFF55;
+$mc-white: #FFFFFF;
 

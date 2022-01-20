@@ -1,8 +1,8 @@
 span.keybind {
   overflow: hidden;
-  background-color: var(--background-highlight);
+  background-color: $background-highlight;
   padding: 0 8px;
-  box-shadow: var(--box-shadow);
+  box-shadow: $box-shadow;
   font-size: smaller;
 }
 
@@ -31,8 +31,8 @@ span.config-helper {
 
     padding-left: 2vmin;
     padding-right: 1vmin;
-    background-color: var(--background-highlight);
-    box-shadow: var(--box-shadow);
+    background-color: $background-highlight;
+    box-shadow: $box-shadow;
     cursor: pointer;
 
     &::after {
@@ -57,14 +57,14 @@ span.config-helper {
 
     // styling
     list-style: none;
-    background: var(--background-highlight);
+    background: $background-highlight;
     padding: 1vmin;
-    border: var(--text-color) 1px solid;
+    border: $text-color 1px solid;
     overflow-y: scroll;
 
     li:hover {
       cursor: pointer;
-      color: var(--highlight-color);
+      color: $highlight-color;
     }
   }
 

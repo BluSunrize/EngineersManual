@@ -1,6 +1,6 @@
 @import 'constants';
 
-$mobile-aspect-ratio: 2/2.75;
+$mobile-aspect-ratio: "2 / 2.75";
 
 :root {
   font-size: 4vmin; //font size relative to the screen height
@@ -16,16 +16,16 @@ $mobile-aspect-ratio: 2/2.75;
   // Scrollbar handling for firefox
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--highlight-color) var(--text-color);
+    scrollbar-color: $highlight-color $text-color;
   }
 
   // And for all other browsers
   *::-webkit-scrollbar {
-    background: var(--text-color);
+    background: $text-color;
     width: 0.5vmin;
 
     &-thumb {
-      background-color: var(--highlight-color);
+      background-color: $highlight-color;
     }
   }
 
@@ -46,7 +46,7 @@ body {
   font-family: 'Unifont';
   font-weight: normal;
   font-style: normal;
-  color: var(--text-color);
+  color: $text-color;
   height: 98vmin;
 }
 
@@ -82,7 +82,7 @@ button {
   left: 66%;
   position: relative;
   transform-origin: bottom;
-  background-color: var(--highlight-color);
+  background-color: $highlight-color;
   animation: spinner 5s linear 0s infinite;
 }
 
@@ -102,7 +102,7 @@ button.off {
 }
 
 #back_button {
-  color: var(--text-color);
+  color: $text-color;
   opacity: 60%;
   position: absolute;
   z-index: 40;
@@ -147,11 +147,11 @@ button.off {
 
     &::before {
       content: '🡄';
-      color: var(--text-color);
+      color: $text-color;
     }
 
     &:hover::before {
-      color: var(--highlight-color);
+      color: $highlight-color;
     }
   }
 }
@@ -174,7 +174,7 @@ button.off {
 }
 
 .content ul li:hover {
-  color: var(--highlight-color);
+  color: $highlight-color;
   cursor: pointer;
 }
 
@@ -182,8 +182,8 @@ button.off {
 .content h2,
 .content h3 {
   text-align: center;
-  color: var(--title-color);
-  text-shadow: 0.3vmin 0.3vmin var(--title-shadow-color);
+  color: $title-color;
+  text-shadow: 0.3vmin 0.3vmin $title-shadow-color;
   margin: 0;
 }
 
@@ -203,15 +203,15 @@ button.off {
 .pagetext {
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: var(--highlight-color) var(--text-color);
+  scrollbar-color: $highlight-color $text-color;
 }
 
 .pagetext::-webkit-scrollbar-track {
-  background: var(--text-color);
+  background: $text-color;
 }
 
 .pagetext::-webkit-scrollbar-thumb {
-  background-color: var(--highlight-color);
+  background-color: $highlight-color;
 }
 
 /* Language & Branch */
@@ -231,7 +231,7 @@ footer {
   width: 60vmin;
 
   & button::before {
-    color: var(--text-color);
+    color: $text-color;
     opacity: 60%;
     position: relative;
     top: -3vmin;
@@ -262,12 +262,12 @@ div.pages p {
 
 /* Links */
 .content a {
-  color: var(--text-color);
+  color: $text-color;
   text-decoration: none;
 }
 
 .content a:hover {
-  color: var(--highlight-color);
+  color: $highlight-color;
   cursor: pointer;
 }
 
@@ -300,7 +300,7 @@ div.pages p {
   outline: 5px solid #25015c;
   outline-offset: -10px;
   padding: 10px 15px;
-  color: var(--mc-white);
+  color: $mc-white;
   text-align: left;
   overflow-wrap: anywhere;
 
@@ -309,10 +309,10 @@ div.pages p {
   z-index: 10;
 
   & *:not(:first-child) {
-    color: var(--mc-gray);
+    color: $mc-gray;
   }
 
   & span.domain {
-    color: var(--mc-dark-blue);
+    color: $mc-dark-blue;
   }
 }
