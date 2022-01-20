@@ -1,11 +1,20 @@
 import React from "react";
 import reactStringReplace from "react-string-replace";
-import {Anchor, ConfigBool, ConfigInt, ConfigIntArray, KeyBind, ManualLink, PageBreak} from "./generic_elements";
+import {
+    Anchor,
+    ConfigBool,
+    ConfigInt,
+    ConfigIntArray,
+    Formatting,
+    KeyBind,
+    ManualLink,
+    PageBreak
+} from "./generic_elements";
 import {reactSetStateWrapper} from "./resources";
 import {verifyEntryExists} from "./App";
 
 const re_anchor = /<&(\w+)>/g;
-const re_link = /<link;(\w+);([^;]*?)(?:;(\w*))?>/g;
+const re_link = /<link;(\w+);([^;]*?)(?:;([^>]*))?>/g;
 const re_keybind = /<keybind;([\w.]+)>/g;
 const re_formatting = /§([^r])(.+?)§r/g;
 
@@ -138,7 +147,7 @@ export class ManualEntry extends React.Component {
 
         // replace all instances of formatting with nested spans
         input = replaceJSX(input, re_formatting, (match, format, text) => {
-            return <><span className={'formatting_' + format}>{this.handleReplacements(text + '§r')}</span></>;
+            return <Formatting format={format} length={text.length} text={this.handleReplacements(text + '§r')}/>
         });
 
         // replace all integer config values

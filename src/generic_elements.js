@@ -20,6 +20,10 @@ export function ManualLink(props) {
     )
 }
 
+export function Formatting(props) {
+    return <span className={'formatting_' + props.format}>{props.text}</span>;
+}
+
 export class Anchor extends React.Component {
     static make(name, branch, data) {
         data = data[name]
