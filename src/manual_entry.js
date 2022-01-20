@@ -42,7 +42,9 @@ function isReactElement(element, ...types) {
     return true;
 }
 
-const MAX_LINES = 19;
+const LINES_PER_PAGE = 17;
+const CHARS_PER_LINE = 30;
+const CHARS_PER_PAGE = LINES_PER_PAGE * CHARS_PER_LINE;
 
 export class ManualEntry extends React.Component {
     constructor(props) {
@@ -68,8 +70,6 @@ export class ManualEntry extends React.Component {
             if (!isReactElement(formatted[0], Anchor))
                 formatted.unshift(Anchor.make('start', this.props.branch, this.props.data));
 
-            console.log('entry flattened and ready, ', formatted);
-
             // split at the pagebreaks
             let last = 0;
             let length = 0;
@@ -79,21 +79,32 @@ export class ManualEntry extends React.Component {
                 if (!isBreak) {
                     // check if we can fit the whole piece
                     let lines = null;
-                    let lengthL = 1;
+                    let lengthL = CHARS_PER_LINE;
                     // if it's a string, split it into lines
                     if (typeof formatted[i] === 'string') {
                         lines = formatted[i].match(/.{1,30}(\s|$)/g);
-                        lengthL = formatted[i].length < 3 ? 0 : lines.length;
+                        lengthL = formatted[i].length;
+                        //lengthL = lines.length * CHARS_PER_LINE;
+                        //formatted[i].length < 3 ? 0 : lines.length;
+                    } else if (isReactElement(formatted[i], Formatting, ConfigBool, ManualLink)) {
+                        lengthL = formatted[i].props.length;
+                    } else if (isReactElement(formatted[i], <br/>)) {
+                        lengthL = CHARS_PER_LINE;
+                    } else if (isReactElement(formatted[i], ConfigIntArray, ConfigInt)) {
+                        lengthL = 7;
                     }
 
-                    if (length + lengthL > MAX_LINES) {
+                    //CHARS_PER_PAGE
+                    if (length + lengthL > CHARS_PER_PAGE) {
                         // if it's multiple lines, try partial fit
                         if (lines && lines.length > 1) {
-                            let willFit = lines.slice(0, MAX_LINES - length);
-                            let wontFit = lines.slice(MAX_LINES - length);
-                            formatted.splice(i, 1, willFit.join(''), wontFit.join(''));
+                            let currentLineCount = Math.round(length / CHARS_PER_LINE);
+                            let willFit = lines.slice(0, LINES_PER_PAGE - currentLineCount).join('');
+                            let wontFit = lines.slice(LINES_PER_PAGE - currentLineCount).join('');
+                            formatted.splice(i, 1, willFit, wontFit);
                             hasSpliced = true;
                             i++;
+                            lengthL = willFit.length;
                         }
                         isBreak = true;
                     }
@@ -108,8 +119,9 @@ export class ManualEntry extends React.Component {
                     else
                         last = i;
                     length = 0;
-                    if (isReactElement(formatted[i], Anchor))
-                        length = formatted[i].props.height;
+                    if (isReactElement(formatted[i], Anchor)) {
+                        length = formatted[i].props.height * CHARS_PER_LINE;
+                    }
 
                     if (hasSpliced)
                         i--;
@@ -117,8 +129,6 @@ export class ManualEntry extends React.Component {
             }
             // add the rest
             pages.push(formatted.slice(last, formatted.length))
-
-            console.log('prepped pages', pages);
 
             // filter out empties, wrap in divs
             pages = pages
@@ -141,7 +151,7 @@ export class ManualEntry extends React.Component {
                 link = ''
             else
                 verifyEntryExists(this.props.branch, this.props.lang, link);
-            return <ManualLink key={link + '?' + anchor} link={link} anchor={anchor}
+            return <ManualLink key={link + '?' + anchor} link={link} anchor={anchor} length={text.length}
                                text={this.handleReplacements(text)}/>;
         });
 
@@ -154,7 +164,11 @@ export class ManualEntry extends React.Component {
         input = replaceJSX(input, re_config_int, (match, cfg) => <ConfigInt cfg={cfg}/>);
 
         // replace all boolean config values
-        input = replaceJSX(input, re_config_bool, (match, cfg, on, off) => <ConfigBool cfg={cfg} text={[on, off]}/>);
+        input = replaceJSX(input, re_config_bool, (match, cfg, on, off) =>
+            <ConfigBool cfg={cfg}
+                        text={[this.handleReplacements(on), this.handleReplacements(off)]}
+                        length={Math.max(on.length, off.length)}
+            />);
 
         // replace all integer config values
         input = replaceJSX(input, re_config_int_array, (match, cfg) => <ConfigIntArray cfg={cfg}/>);

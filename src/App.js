@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './styling/manual.scss';
 import React from "react";
 import {BrowserRouter, Link, Navigate, Route, Routes} from 'react-router-dom'
@@ -157,7 +156,6 @@ class Manual extends React.Component {
             await fetch(`${getManualPath(branch)}autoload.json`)
                 .then(res => res.json())
                 .then(data => {
-                    console.log('got autoload!', data);
                     for (let key in data)
                         loadCategory(branch, lang, key, data[key], entryPromises, true);
                 });
