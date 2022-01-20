@@ -1,11 +1,15 @@
 import React from "react";
 import {Tooltip} from "./generic_elements";
 import {translateIEItem, upperCaseName} from "./localization";
-import {getRecipePath, MOD_ID} from "./resources";
+import {getAssetPath, getRecipePath, MOD_ID} from "./resources";
 
 const SPECIAL_ELEMENT_HEIGHTS = {
-    crafting: (e) => 'recipe' in e ? 8 : 'recipes' in e ? 8 * e['recipes'].length : 1,
+    crafting: (e) => 'recipe' in e ? 7 : 'recipes' in e ? 7 * e['recipes'].length : 1,
     item_display: (e) => 4,
+    image: (e) => 'images' in e ? e['images'].reduce((acc, image) => {
+        let scale = 55 / image['uSize'];
+        return acc + image['vSize'] * scale * 0.25;
+    }, 0) : 1,
 };
 
 export function loadSpecialElement(branch, element) {
@@ -33,6 +37,24 @@ export function loadSpecialElement(branch, element) {
                     : element['items'] ? element['items'].map(item => <Ingredient symbol={'Item'} value={item}/>)
                         : null
                 }
+            </div>);
+    }
+    // images
+    if (element['type'] === 'image') {
+        return Promise.resolve(
+            <div className="images">
+                {element['images'].map((image, idx) => {
+                        let scale = 55 / image['uSize'];
+                        let offset = [-scale * image['uMin'], -scale * image['vMin']];
+                        let style = {
+                            'backgroundImage': `url(${getAssetPath(branch)}${image['location']})`,
+                            'height': `${scale * image['vSize']}vmin`,
+                            'backgroundSize': `${Math.round(256 / image['uSize'] * 100)}%`,
+                            'backgroundPosition': `${offset[0]}vmin ${offset[1]}vmin`
+                        }
+                        return <div className="embedded_image" key={idx} style={style}/>
+                    }
+                )}
             </div>);
     }
     return new Promise((resolve, reject) => resolve(null));
@@ -164,10 +186,10 @@ function Ingredient(props) {
         return <div className="item" onMouseMove={
             event => {
                 let tooltip = event.currentTarget.querySelector('.tooltip');
-                if(tooltip) {
+                if (tooltip) {
                     tooltip.style.position = 'fixed';
                     tooltip.style.top = `calc(${event.clientY}px + 2vmin)`;
-                    tooltip.style.left = event.clientX+'px';
+                    tooltip.style.left = event.clientX + 'px';
                 }
             }
         }>

@@ -109,3 +109,17 @@ div.item_display {
     text-align: center;
   }
 }
+
+
+.images {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .embedded_image {
+    width: 55vmin;
+    border: 1vmin var(--highlight-color) solid;
+    margin: 0.5vmin;
+  }
+
+}
