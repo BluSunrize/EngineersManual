@@ -33,10 +33,16 @@ export function loadSpecialElement(branch, element) {
     }
     // item displays look very silly without textures
     if (element['type'] === 'item_display') {
+        function unwrapItem(item) {
+            if (typeof item === 'object' && item['item'])
+                return item['item'];
+            return item;
+        }
         return Promise.resolve(
             <div className="item_display">
-                {element['item'] ? <Ingredient symbol={'Item'} value={element}/>
-                    : element['items'] ? element['items'].map(item => <Ingredient symbol={'Item'} value={item}/>)
+                {element['item'] ? <Ingredient symbol={'Item'} value={unwrapItem(element)}/>
+                    : element['items'] ? element['items'].map(item => <Ingredient symbol={'Item'}
+                                                                                  value={unwrapItem(item)}/>)
                         : null
                 }
             </div>);
@@ -138,6 +144,7 @@ class Recipe extends React.Component {
     static loadRecipe(branch, key) {
         return fetch(`${getRecipePath(branch)}${key}.json`)
             .then(res => res.json())
+            .then(res => 'baseRecipe' in res ? res['baseRecipe'] : res)
             .then(out => <Recipe name={key} key={key} data={out}/>);
     }
 
