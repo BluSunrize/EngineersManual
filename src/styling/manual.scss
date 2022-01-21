@@ -49,6 +49,14 @@ div.touch-handler {
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'PixeloidSans';
+  src: url('../assets/PixeloidSans.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 .hidden {
   display: none !important;
 }
@@ -314,6 +322,7 @@ div.pages p {
   color: $mc-white;
   text-align: left;
   overflow-wrap: anywhere;
+  font-family: PixeloidSans;
 
   position: fixed;
   max-width: 50%;
