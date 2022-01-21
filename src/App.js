@@ -1,6 +1,6 @@
 import './styling/manual.scss';
 import React from "react";
-import {BrowserRouter, Link, Navigate, Route, Routes} from 'react-router-dom'
+import {Link, Navigate, Route, Routes} from 'react-router-dom'
 import {ManualEntry} from "./manual_entry";
 import {
     addTranslation,
@@ -78,16 +78,14 @@ export function verifyEntryExists(branch, lang, key) {
 
 function App() {
     return (
-        <BrowserRouter basename='/'>
-            <div className="manual">
-                <Routes>
-                    <Route path={':lang/*'}>
-                        <Route path={':branch/*'} element={<ManualWrapper/>}/>
-                    </Route>
-                    <Route path="*" element={<Navigate to={`${DEFAULT_LANGUAGE}/${DEFAULT_BRANCH}`}/>}/>
-                </Routes>
-            </div>
-        </BrowserRouter>
+        <div className="manual">
+            <Routes>
+                <Route path={':lang/*'}>
+                    <Route path={':branch/*'} element={<ManualWrapper/>}/>
+                </Route>
+                <Route path="*" element={<Navigate to={`${DEFAULT_LANGUAGE}/${DEFAULT_BRANCH}`}/>}/>
+            </Routes>
+        </div>
     );
 }
 
