@@ -11,6 +11,7 @@ const SPECIAL_ELEMENT_HEIGHTS = {
         return acc + image['vSize'] * scale * 0.25;
     }, 0) : 1,
     blueprint: () => 7,
+    multiblock: () => 5,
 };
 
 export function loadSpecialElement(branch, element) {
@@ -66,6 +67,13 @@ export function loadSpecialElement(branch, element) {
         //multiple recipes
         else if (element['recipes'])
             return Blueprint.loadRecipes(branch, element['recipes']);
+    }
+    // multiblocks are not rendered
+    if (element['type'] === 'multiblock') {
+        return Promise.resolve(<div className="multiblock">
+            In the ingame manual, you would see a cool looking multiblock here.<br/>
+            {element['name']}
+        </div>)
     }
     return new Promise((resolve, reject) => resolve(null));
 }
