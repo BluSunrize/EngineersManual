@@ -35,6 +35,13 @@ $mobile-aspect-ratio: "2 / 2.75";
 
 }
 
+// touch handler is full size to account for short text blocks
+div.touch-handler {
+  height: 100%;
+  touch-action: none;
+}
+
+
 @font-face {
   font-family: 'Unifont';
   src: url('../assets/unifont-14.0.01.ttf') format('truetype');
@@ -242,6 +249,7 @@ footer {
   & button.page_prev {
     @include arrow-left();
   }
+
   & button.page_next {
     @include arrow-right();
   }

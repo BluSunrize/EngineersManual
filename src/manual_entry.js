@@ -12,6 +12,7 @@ import {
 } from "./generic_elements";
 import {reactSetStateWrapper} from "./resources";
 import {verifyEntryExists} from "./App";
+import {useDrag} from "@use-gesture/react";
 
 const re_anchor = /<&(\w+)>/g;
 const re_link = /<link;(\w+);([^;]*?)(?:;([^>]*))?>/g;
@@ -212,6 +213,23 @@ export class ManualEntry extends React.Component {
         }
     }
 
+    changePage(next) {
+        if (next)
+            this.nextPage();
+        else
+            this.prevPage();
+    }
+
+    nextPage() {
+        if (this.state.page < this.state.pages.length - 1)
+            this.setPage(this.state.page + 1);
+    }
+
+    prevPage() {
+        if (this.state.page > 0)
+            this.setPage(this.state.page - 1);
+    }
+
     setPage(page) {
         this.setState({
             page: page
@@ -219,9 +237,16 @@ export class ManualEntry extends React.Component {
     }
 
     render() {
+
         return this.state.loaded ? (
-            <div onTouchStart={event => this.handleTouchStart(event)}
-                 onTouchEnd={event => this.handleTouchEnd(event)}>
+            <TouchHandler swipeX={right => this.changePage(right)}
+                          doubleTap={(relX, relY) => {
+                              if (relX >= 0.9)
+                                  this.nextPage();
+                              if (relX <= 0.1)
+                                  this.prevPage();
+                          }}
+            >
                 <h2>{this.props.title}</h2>
                 <h3>{this.props.subtitle}</h3>
                 <div key={this.props.text} className="page">
@@ -230,14 +255,44 @@ export class ManualEntry extends React.Component {
                 <footer>
                     <button
                         className={"page_prev" + (this.state.page > 0 ? '' : ' off')}
-                        onClick={() => this.setPage(this.state.page - 1)}/>
+                        onClick={() => this.prevPage()}/>
                     <span className="page-number">{this.state.page + 1}</span>
                     <button
                         className={"page_next" + (this.state.page < this.state.pages.length - 1 ? '' : ' off')}
-                        onClick={() => this.setPage(this.state.page + 1)}/>
+                        onClick={() => this.nextPage()}/>
                 </footer>
-            </div>
+            </TouchHandler>
         ) : <span>Page is loading, please wait</span>;
     }
+}
 
+function TouchHandler(props) {
+    let prevTimeStamp = -1;
+    const bind = useDrag(({
+                              down, canceled, tap, target, timeStamp,
+                              distance: [dx, dy], xy: [x, y], direction
+                          }) => {
+            if (!down && !canceled) {
+                if (tap) {
+                    const relX = (x - target.offsetLeft) / target.clientWidth;
+                    const relY = (y - target.offsetTop) / target.clientHeight;
+                    const elapsed = timeStamp - prevTimeStamp;
+                    if (elapsed < 200)
+                        props.doubleTap && props.doubleTap(relX, relY);
+                    else
+                        props.singleTap && props.singleTap(relX, relY);
+                    prevTimeStamp = timeStamp;
+                } else {
+                    const dist = dx / target.clientWidth;
+                    if (Math.abs(dist) > 0.2)
+                        props.swipeX && props.swipeX(direction[0] < 0);
+                }
+            }
+
+        },
+        {filterTaps: true}
+    );
+    return <div{...bind()} className="touch-handler">
+        {props.children}
+    </div>;
 }
