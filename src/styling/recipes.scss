@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   width: 60vmin;
-  height: 23vmin;
+  min-height: 23vmin;
   margin: auto auto 4vmin;
 
   &.errormsg {
@@ -77,9 +77,16 @@ div.item {
   }
 }
 
-div.blueprint-ingredient {
-  margin-right: 5vmin;
+div.blueprint {
+  div.blueprint-ingredient {
+    margin-right: 5vmin;
+  }
+
+  div.output {
+    margin-left: 3vmin;
+  }
 }
+
 
 div.item_display {
   display: flex;
