@@ -9,6 +9,10 @@ $mobile-aspect-ratio: "2 / 2.75";
     font-size: 5.5vmin; //for phones
   }
 
+  @media (prefers-color-scheme: dark) {
+    background: rgb(43, 42, 51);
+  }
+
   // no blurry pictures here!
   image-rendering: crisp-edges;
   image-rendering: pixelated;
