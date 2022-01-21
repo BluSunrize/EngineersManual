@@ -25,6 +25,7 @@ span.config-helper {
 .select-dropdown {
   display: flex;
   align-items: baseline;
+  position: absolute;
 
   .select-header {
     right: 0;
@@ -36,13 +37,18 @@ span.config-helper {
     cursor: pointer;
 
     &::after {
-      content: '🠻';
+      content: '';
+      display: inline-block;
+      background-image: url('../assets/arrow_down.png');
+      background-size: cover;
+      width: 2.5vmin;
+      height: 2.5vmin;
       left: 0.5vmin;
       position: relative;
     }
 
     &.active::after {
-      content: '🠹';
+      background-image: url('../assets/arrow_up.png');
     }
   }
 

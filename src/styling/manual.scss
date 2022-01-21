@@ -173,20 +173,26 @@ button.off {
 
 /* Entry List */
 .content ul.entry-list {
-  //height: 100%;
   list-style: none;
   overflow: auto;
 
-  .category a::before {
-    content: "⯈";
-    opacity: 60%;
+  .category:hover, .category:hover a {
+    color: $highlight-color;
+    cursor: pointer;
   }
 
-}
+  .category a::before {
+    content: '';
+    display: inline-block;
+    background-image: url('../assets/arrow_category.png');
+    background-size: cover;
+    height: 2.5vmin;
+    width: 2.5vmin;
+  }
 
-.content ul li:hover {
-  color: $highlight-color;
-  cursor: pointer;
+  .category:hover a::before {
+    background-image: url('../assets/arrow_category_active.png');
+  }
 }
 
 /* Headlines */
@@ -227,8 +233,8 @@ button.off {
 
 /* Language & Branch */
 .manual > header {
-  position: absolute;
-  bottom: 9vmin;
+  position: relative;
+  margin-top: -20%;
 }
 
 
