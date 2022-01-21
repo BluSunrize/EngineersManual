@@ -25,5 +25,12 @@ export function reactSetStateWrapper(element, state, mountKeyword = 'loaded') {
     else
         for (let key in state)
             element.state[key] = state[key];
+}
 
+export function elementHasClass(element, css_class){
+    if(!element)
+        return false;
+    if(!element.classList)
+        return false;
+    return element.classList.contains(css_class);
 }

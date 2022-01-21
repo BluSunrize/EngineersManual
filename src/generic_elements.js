@@ -1,14 +1,32 @@
 import React from "react";
 import {translate} from "./localization";
 import {getSpecialHeight, loadSpecialElement} from "./special_elements";
-import {reactSetStateWrapper, SUPPORTED_BRANCHES} from "./resources";
+import {elementHasClass, reactSetStateWrapper} from "./resources";
 import {Link} from "react-router-dom";
+
+let last_tooltip = null;
 
 export class Tooltip extends React.Component {
     render() {
         return <div className="tooltip">
             {this.props.text}
         </div>;
+    }
+
+    static findAndShowTooltip(start) {
+        let tooltip = start.nextSibling;
+        if (!elementHasClass(tooltip, 'tooltip')) {
+            if (elementHasClass(start, 'item'))
+                tooltip = start.querySelector('.tooltip');
+            else if (elementHasClass(start.parent, 'item'))
+                tooltip = start.parent.querySelector('.tooltip');
+        }
+        if (last_tooltip)
+            last_tooltip.style.display = 'none';
+        if (!elementHasClass(tooltip, 'tooltip'))
+            return;
+        tooltip.style.display = 'block';
+        last_tooltip = tooltip;
     }
 }
 

@@ -1,14 +1,7 @@
 import React from "react";
 import reactStringReplace from "react-string-replace";
 import {
-    Anchor,
-    ConfigBool,
-    ConfigInt,
-    ConfigIntArray,
-    Formatting,
-    KeyBind,
-    ManualLink,
-    PageBreak
+    Anchor, ConfigBool, ConfigInt, ConfigIntArray, Formatting, KeyBind, ManualLink, PageBreak, Tooltip
 } from "./generic_elements";
 import {reactSetStateWrapper} from "./resources";
 import {verifyEntryExists} from "./App";
@@ -240,11 +233,14 @@ export class ManualEntry extends React.Component {
 
         return this.state.loaded ? (
             <TouchHandler swipeX={right => this.changePage(right)}
-                          doubleTap={(relX, relY) => {
+                          doubleTap={(relX) => {
                               if (relX >= 0.9)
                                   this.nextPage();
                               if (relX <= 0.1)
                                   this.prevPage();
+                          }}
+                          singleTap={(relX, relY, target) => {
+                              Tooltip.findAndShowTooltip(target);
                           }}
             >
                 <h2>{this.props.title}</h2>
@@ -278,9 +274,9 @@ function TouchHandler(props) {
                     const relY = (y - target.offsetTop) / target.clientHeight;
                     const elapsed = timeStamp - prevTimeStamp;
                     if (elapsed < 200)
-                        props.doubleTap && props.doubleTap(relX, relY);
+                        props.doubleTap && props.doubleTap(relX, relY, target);
                     else
-                        props.singleTap && props.singleTap(relX, relY);
+                        props.singleTap && props.singleTap(relX, relY, target);
                     prevTimeStamp = timeStamp;
                 } else {
                     const dist = dx / target.clientWidth;
