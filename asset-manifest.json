@@ -1,15 +1,16 @@
 {
   "files": {
-    "main.css": "/EngineersManual/static/css/main.4eb18182.css",
-    "main.js": "/EngineersManual/static/js/main.c8567cc3.js",
+    "main.css": "/EngineersManual/static/css/main.907fe833.css",
+    "main.js": "/EngineersManual/static/js/main.a08bc23f.js",
     "static/media/unifont-14.0.01.ttf": "/EngineersManual/static/media/unifont-14.0.01.c40898a581d26b9d47f8.ttf",
+    "static/media/PixeloidSans.ttf": "/EngineersManual/static/media/PixeloidSans.a5be60039e71d621d8eb.ttf",
     "static/media/manual.png": "/EngineersManual/static/media/manual.909211c1c119bec44943.png",
     "index.html": "/EngineersManual/index.html",
-    "main.4eb18182.css.map": "/EngineersManual/static/css/main.4eb18182.css.map",
-    "main.c8567cc3.js.map": "/EngineersManual/static/js/main.c8567cc3.js.map"
+    "main.907fe833.css.map": "/EngineersManual/static/css/main.907fe833.css.map",
+    "main.a08bc23f.js.map": "/EngineersManual/static/js/main.a08bc23f.js.map"
   },
   "entrypoints": [
-    "static/css/main.4eb18182.css",
-    "static/js/main.c8567cc3.js"
+    "static/css/main.907fe833.css",
+    "static/js/main.a08bc23f.js"
   ]
 }
