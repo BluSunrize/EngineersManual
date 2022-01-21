@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/EngineersManual/static/css/main.b4484d2f.css",
-    "main.js": "/EngineersManual/static/js/main.a5c4dcbc.js",
+    "main.css": "/EngineersManual/static/css/main.385804ad.css",
+    "main.js": "/EngineersManual/static/js/main.c8567cc3.js",
     "static/media/unifont-14.0.01.ttf": "/EngineersManual/static/media/unifont-14.0.01.c40898a581d26b9d47f8.ttf",
     "static/media/manual.png": "/EngineersManual/static/media/manual.909211c1c119bec44943.png",
     "index.html": "/EngineersManual/index.html",
-    "main.b4484d2f.css.map": "/EngineersManual/static/css/main.b4484d2f.css.map",
-    "main.a5c4dcbc.js.map": "/EngineersManual/static/js/main.a5c4dcbc.js.map"
+    "main.385804ad.css.map": "/EngineersManual/static/css/main.385804ad.css.map",
+    "main.c8567cc3.js.map": "/EngineersManual/static/js/main.c8567cc3.js.map"
   },
   "entrypoints": [
-    "static/css/main.b4484d2f.css",
-    "static/js/main.a5c4dcbc.js"
+    "static/css/main.385804ad.css",
+    "static/js/main.c8567cc3.js"
   ]
 }
