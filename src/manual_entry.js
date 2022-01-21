@@ -213,6 +213,7 @@ export class ManualEntry extends React.Component {
                     <button
                         className={"page_prev" + (this.state.page > 0 ? '' : ' off')}
                         onClick={() => this.setPage(this.state.page - 1)}/>
+                    <span className="page-number">{this.state.page + 1}</span>
                     <button
                         className={"page_next" + (this.state.page < this.state.pages.length - 1 ? '' : ' off')}
                         onClick={() => this.setPage(this.state.page + 1)}/>

@@ -234,12 +234,9 @@ footer {
   top: 89vmin;
   width: 60vmin;
 
-  & button::before {
-    color: $text-color;
+  & .page-number {
+    font-weight: bold;
     opacity: 60%;
-    position: relative;
-    top: -3vmin;
-    font-size: 7vmin;
   }
 
   & button.page_prev {
@@ -248,17 +245,6 @@ footer {
   & button.page_next {
     @include arrow-right();
   }
-
-  //& button.page_prev::before {
-  //  content: '⮨';
-  //  left: -1vmin;
-  //}
-  //
-  //& button.page_next::before {
-  //  content: '⮩';
-  //  left: 1vmin;
-  //}
-
 
   @media (max-aspect-ratio: $mobile-aspect-ratio) {
     top: 123vmin;
