@@ -195,6 +195,23 @@ export class ManualEntry extends React.Component {
         });
     }
 
+    handleTouchStart(event) {
+        this.touchStart = event.changedTouches[0].clientX;
+    }
+
+    handleTouchEnd(event) {
+        if (event.target.clientWidth > 0) {
+            const touchEnd = event.changedTouches[0].clientX;
+            const dist = (this.touchStart - touchEnd) / event.target.clientWidth;
+            if (Math.abs(dist) > 0.2) {
+                if (dist > 0 && this.state.page < this.state.pages.length - 1)
+                    this.setPage(this.state.page + 1);
+                if (dist < 0 && this.state.page > 0)
+                    this.setPage(this.state.page - 1);
+            }
+        }
+    }
+
     setPage(page) {
         this.setState({
             page: page
@@ -203,7 +220,8 @@ export class ManualEntry extends React.Component {
 
     render() {
         return this.state.loaded ? (
-            <>
+            <div onTouchStart={event => this.handleTouchStart(event)}
+                 onTouchEnd={event => this.handleTouchEnd(event)}>
                 <h2>{this.props.title}</h2>
                 <h3>{this.props.subtitle}</h3>
                 <div key={this.props.text} className="page">
@@ -218,7 +236,7 @@ export class ManualEntry extends React.Component {
                         className={"page_next" + (this.state.page < this.state.pages.length - 1 ? '' : ' off')}
                         onClick={() => this.setPage(this.state.page + 1)}/>
                 </footer>
-            </>
+            </div>
         ) : <span>Page is loading, please wait</span>;
     }
 
