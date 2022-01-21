@@ -24,3 +24,22 @@ $mc-light-purple: #FF55FF;
 $mc-yellow: #FFFF55;
 $mc-white: #FFFFFF;
 
+@mixin arrow($direction, $width: 8vmin) {
+  background-image: url('../assets/arrow_#{$direction}.png');
+  background-size: cover;
+  height: 5vmin;
+  width: $width;
+
+  &:hover{
+    background-image: url('../assets/arrow_#{$direction}_active.png');
+  }
+}
+
+@mixin arrow-left($width: 8vmin) {
+  @include arrow('left', $width);
+}
+
+@mixin arrow-right($width: 8vmin) {
+  @include arrow('right', $width);
+  background-position-x: $width - 8vmin;
+}

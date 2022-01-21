@@ -168,9 +168,8 @@ class Manual extends React.Component {
     }
 
 }
-
 function BackButton() {
-    return useParams()['*'] && <button id="back_button" onClick={() => window.history.back()}>🡄</button>;
+    return useParams()['*'] && <button id="back_button" onClick={() => window.history.back()}/>;
 }
 
 function ManualContent(props) {

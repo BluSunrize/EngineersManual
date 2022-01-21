@@ -107,11 +107,11 @@ button.off {
 
 #back_button {
   color: $text-color;
-  opacity: 60%;
   position: absolute;
   z-index: 40;
-  margin-left: -3vmin;
-  margin-top: -1vmin;
+  margin-left: -2vmin;
+  margin-top: 1vmin;
+  @include arrow-left(5vmin);
 }
 
 .manual {
@@ -242,15 +242,22 @@ footer {
     font-size: 7vmin;
   }
 
-  & button.page_prev::before {
-    content: '⮨';
-    left: -1vmin;
+  & button.page_prev {
+    @include arrow-left();
+  }
+  & button.page_next {
+    @include arrow-right();
   }
 
-  & button.page_next::before {
-    content: '⮩';
-    left: 1vmin;
-  }
+  //& button.page_prev::before {
+  //  content: '⮨';
+  //  left: -1vmin;
+  //}
+  //
+  //& button.page_next::before {
+  //  content: '⮩';
+  //  left: 1vmin;
+  //}
 
 
   @media (max-aspect-ratio: $mobile-aspect-ratio) {

@@ -148,7 +148,7 @@ class Recipe extends React.Component {
                 <div className={'grid col' + data.pattern[0].length}>
                     {patternFlat.map((c, i) => <Ingredient key={i} symbol={c} value={data.key[c]}/>)}
                 </div>
-                <div className="arrow"/>
+                <div className="crafting-arrow"/>
                 <div className="output">
                     <Ingredient symbol={'?'} value={data.result}/>
                 </div>
@@ -163,7 +163,7 @@ class Recipe extends React.Component {
                 <div className={'grid col' + cols}>
                     {data.ingredients.map((e, i) => <Ingredient key={i} symbol={i} value={e}/>)}
                 </div>
-                <div className="arrow"/>
+                <div className="crafting-arrow"/>
                 <div className="output">
                     <Ingredient symbol={'?'} value={data.result}/>
                 </div>

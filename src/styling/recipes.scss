@@ -13,15 +13,14 @@
 
 .multi_recipe {
   display: flex;
+  align-items: center;
 
-  & button.recipe_prev::before {
-    content: '🠼';
-    color: $text-color;
+  & button.recipe_prev {
+    @include arrow-left(4vmin);
   }
 
-  & button.recipe_next::before {
-    content: '🠾';
-    color: $text-color;
+  & button.recipe_next {
+    @include arrow-right(4vmin);
   }
 }
 
@@ -43,15 +42,9 @@
   }
 }
 
-div.arrow, div.output {
-  margin: auto 5%;
-}
-
-div.arrow::before {
-  content: '🡆';
-  color: rgba(0, 0, 0, 0.1);
-  vertical-align: super;
-  font-size: xxx-large;
+div.crafting-arrow {
+  margin: auto 1vmin;
+  @include arrow-right();
 }
 
 div.item {
