@@ -230,7 +230,6 @@ export class ManualEntry extends React.Component {
     }
 
     render() {
-
         return this.state.loaded ? (
             <TouchHandler swipeX={right => this.changePage(right)}
                           doubleTap={(relX) => {
@@ -288,7 +287,9 @@ function TouchHandler(props) {
         },
         {filterTaps: true}
     );
-    return <div{...bind()} className="touch-handler">
-        {props.children}
-    </div>;
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0)
+        return <div{...bind()} className="touch-handler">
+            {props.children}
+        </div>;
+    return <>{props.children}</>;
 }
