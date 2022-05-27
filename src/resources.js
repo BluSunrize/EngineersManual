@@ -1,4 +1,7 @@
 export const SUPPORTED_BRANCHES = [
+    // TODO this one needs to be removed!
+    'feature-datagen-models',
+    '1.18.2',
     '1.18.1',
     '1.18',
     '1.16.5',
@@ -10,11 +13,20 @@ export const DEFAULT_BRANCH = SUPPORTED_BRANCHES[0];
 
 export const MOD_ID = 'immersiveengineering';
 
-export const getAssetPath = (branch) => `https://raw.githubusercontent.com/BluSunrize/ImmersiveEngineering/${branch}/src/main/resources/assets/immersiveengineering/`;
+// TODO change back to main repo
+const REPO_BASE = 'https://raw.githubusercontent.com/malte0811/ImmersiveEngineering';
+
+export const getAssetPath = (branch) => `${REPO_BASE}/${branch}/src/main/resources/assets/immersiveengineering/`;
 
 export const getManualPath = (branch) => getAssetPath(branch)+'manual/';
 
-export const getRecipePath = (branch) => `https://raw.githubusercontent.com/BluSunrize/ImmersiveEngineering/${branch}/src/generated/resources/data/immersiveengineering/recipes/`
+export const getRecipePath = (branch) => `${REPO_BASE}/${branch}/src/generated/resources/data/immersiveengineering/recipes/`
+
+export const getDataExportPath = (branch) => `${REPO_BASE}/manual-data/${branch}/`
+
+export const getIconPath = (branch) => getDataExportPath(branch)+'icons/'
+
+export const getTagPath = (branch) => getDataExportPath(branch)+'tags'
 
 /** This is super hacky and probably a bad idea, but it's holding so far! */
 export function reactSetStateWrapper(element, state, mountKeyword = 'loaded') {

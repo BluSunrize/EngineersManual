@@ -1,7 +1,7 @@
 import React from "react";
 import {Tooltip} from "./generic_elements";
 import {translateIEItem, upperCaseName} from "./localization";
-import {getAssetPath, getRecipePath, MOD_ID} from "./resources";
+import {getAssetPath, getIconPath, getRecipePath, getTagPath, MOD_ID} from "./resources";
 
 const SPECIAL_ELEMENT_HEIGHTS = {
     crafting: (e) => 'recipe' in e ? 7 : 'recipes' in e ? 7 * e['recipes'].length : 1,
@@ -33,19 +33,10 @@ export function loadSpecialElement(branch, element) {
     }
     // item displays look very silly without textures
     if (element['type'] === 'item_display') {
-        function unwrapItem(item) {
-            if (typeof item === 'object' && item['item'])
-                return item['item'];
-            return item;
-        }
-        return Promise.resolve(
-            <div className="item_display">
-                {element['item'] ? <Ingredient symbol={'Item'} value={unwrapItem(element)}/>
-                    : element['items'] ? element['items'].map(item => <Ingredient symbol={'Item'}
-                                                                                  value={unwrapItem(item)}/>)
-                        : null
-                }
-            </div>);
+        return Promise.resolve(element['item'] ? [element['item']] : element['items'])
+            .then(res => Promise.all(res.map(item => PreparedIngredient.of(item, branch))))
+            .then(res => res.map(item => <Ingredient symbol={'Item'} value={item}/>))
+            .then(res => <div className="item_display">{res}</div>);
     }
     // images
     if (element['type'] === 'image') {
@@ -93,24 +84,29 @@ export function getSpecialHeight(element) {
     return SPECIAL_ELEMENT_HEIGHTS[type](element) || 0;
 }
 
+function decomposeResourceLocation(fullName) {
+    let split = fullName.split(':');
+    let domain = split.length > 1 ? split[0] : MOD_ID;
+    let name = split[split.length - 1];
+    return {domain: domain, name: name};
+}
+
 function ingredientTooltip(ingredient) {
-    if (ingredient['base_ingredient'])
-        return ingredientTooltip(ingredient['base_ingredient'])
     if (ingredient['tag'])
         return (<>
             <span>Tag:</span><br/>
             <span>{ingredient['tag']}</span>
         </>);
     else if (ingredient['item']) {
-        let split = ingredient['item'].split(':');
-        let domain = split.length > 1 ? split[0] : MOD_ID;
-        let name = split[split.length > 1 ? 1 : 0];
-        if (domain === MOD_ID) {
-            name = translateIEItem(name);
+        const nameParts = decomposeResourceLocation(ingredient['item']);
+        let domain;
+        let name;
+        if (nameParts.domain === MOD_ID) {
+            name = translateIEItem(nameParts.name);
             domain = 'Immersive Engineering';
         } else {
-            domain = upperCaseName(domain);
-            name = upperCaseName(name);
+            domain = upperCaseName(nameParts.domain);
+            name = upperCaseName(nameParts.name);
         }
         return (<>
             <span>{name}</span><br/>
@@ -120,6 +116,62 @@ function ingredientTooltip(ingredient) {
     return '';
 }
 
+// TODO cycle through multiple for tags?
+function getItemToShow(ingredient, branch) {
+    if (ingredient['item']) {
+        return decomposeResourceLocation(ingredient['item']);
+    } else if (ingredient['tag']) {
+        const basePath = getTagPath(branch);
+        const tagParts = decomposeResourceLocation(ingredient['tag']);
+        return fetch(`${basePath}/${tagParts.domain}/${tagParts.name}.json`)
+            .then(res => res.json())
+            .then(res => {
+                // Prefer IE items: we do not have icons for vanilla items
+                for (let itemInTag of res) {
+                    if (itemInTag.startsWith(MOD_ID)) {
+                        return itemInTag;
+                    }
+                }
+                // Fall back to non-IE item
+                return res[0];
+            })
+            .then(res => decomposeResourceLocation(res))
+            .catch(err => undefined);
+    }
+    return undefined;
+}
+
+function unwrapIngredient(ingredient) {
+    while (ingredient && ingredient['base_ingredient']) {
+        ingredient = ingredient['base_ingredient'];
+    }
+    return ingredient;
+}
+
+class PreparedIngredient {
+    rawData;
+    itemImage;
+    itemToShow;
+    tooltip;
+
+    constructor(rawData, itemToShow, itemImage, tooltip) {
+        this.rawData = rawData;
+        this.itemToShow = itemToShow;
+        this.itemImage = itemImage;
+        this.tooltip = tooltip;
+    }
+
+    static async of(ingredientJson, branch) {
+        ingredientJson = unwrapIngredient(ingredientJson);
+        if (ingredientJson) {
+            const item = await getItemToShow(ingredientJson, branch);
+            const itemImage = await imageForItem(item, branch);
+            return new PreparedIngredient(ingredientJson, item, itemImage, ingredientTooltip(ingredientJson));
+        } else {
+            return undefined;
+        }
+    }
+}
 
 class Recipe extends React.Component {
     constructor(props) {
@@ -141,11 +193,26 @@ class Recipe extends React.Component {
         return null;
     }
 
-    static loadRecipe(branch, key) {
-        return fetch(`${getRecipePath(branch)}${key}.json`)
-            .then(res => res.json())
-            .then(res => 'baseRecipe' in res ? res['baseRecipe'] : res)
-            .then(out => <Recipe name={key} key={key} data={out}/>);
+    static async loadRecipe(branch, key) {
+        let json = await (await fetch(`${getRecipePath(branch)}${key}.json`)).json();
+        if ('baseRecipe' in json) {
+            json = json['baseRecipe'];
+        }
+        if ('pattern' in json) {
+            let newKey = {};
+            for (const key in json.key) {
+                newKey[key] = await PreparedIngredient.of(json.key[key], branch);
+            }
+            json.key = newKey;
+        } else if ('ingredients' in json) {
+            let newIngredients = [];
+            for (const ingredient of json.ingredients) {
+                newIngredients.push(await PreparedIngredient.of(ingredient, branch));
+            }
+            json.ingredients = newIngredients;
+        }
+        json.result = await PreparedIngredient.of(json.result, branch);
+        return <Recipe name={key} key={key} data={json}/>;
     }
 
     static buildShapedRecipe(name, data) {
@@ -203,11 +270,21 @@ class MultiRecipe extends React.Component {
     }
 }
 
+async function imageForItem(item, branch) {
+    const basePath = getIconPath(branch);
+    const iconPath = basePath + item.domain + '/' + item.name + '.png';
+    const response = await fetch(iconPath);
+    if (response.ok) {
+        const blob = await response.blob();
+        return <img className="item" alt={item.domain + ':' + item.name} src={URL.createObjectURL(blob)}/>;
+    } else {
+        return undefined;
+    }
+}
 
 function Ingredient(props) {
     let ingredient = props['value'];
-    let present = ingredient && (ingredient['item'] || ingredient['tag'] || ingredient['base_ingredient']);
-    if (!present)
+    if (!ingredient || !ingredient.rawData)
         return <div className="item empty"/>;
     else {
         return <div className="item" onMouseMove={
@@ -220,9 +297,9 @@ function Ingredient(props) {
                 }
             }
         }>
-            <span className="symbol">{props.symbol}</span>
-            {ingredient['count'] && <span className="count">{ingredient['count']}</span>}
-            <Tooltip text={ingredientTooltip(ingredient)}/>
+            {ingredient.itemImage ? ingredient.itemImage : <span className="symbol">{props.symbol}</span>}
+            {ingredient.rawData['count'] && <span className="count">{ingredient.rawData['count']}</span>}
+            <Tooltip text={ingredient.tooltip}/>
         </div>;
     }
 }
@@ -253,22 +330,26 @@ class Blueprint extends React.Component {
         ).map(
             key => fetch(`${getRecipePath(branch)}blueprint/${key}.json`)
                 .then(res => res.json())
-                .then(out => Blueprint.buildRecipe(key, out))
+                .then(out => Blueprint.buildRecipe(key, out, branch))
         )).then(values => <Blueprint recipes={values}/>);
     }
 
-    static buildRecipe(name, data) {
+    static async buildRecipe(name, data, branch) {
         let cols = data.inputs.length === 1 ? 1 : data.inputs.length < 5 ? 2 : 3;
+        let ingredients = [];
+        for (const e of data.inputs) {
+            ingredients.push(await PreparedIngredient.of(e, branch));
+        }
         return (
             <div className="recipe" name={name}>
                 <div className="blueprint-ingredient">
-                    <Ingredient symbol={'B'} value={{item: "immersiveengineering:blueprint"}}/>
+                    <Ingredient symbol={'B'} value={await PreparedIngredient.of({item: "immersiveengineering:blueprint"}, branch)}/>
                 </div>
                 <div className={'grid col' + cols}>
-                    {data.inputs.map((e, i) => <Ingredient key={i} symbol={i} value={e}/>)}
+                    {ingredients.map((e, i) => <Ingredient key={i} symbol={i} value={e}/>)}
                 </div>
                 <div className="output">
-                    <Ingredient symbol={'?'} value={data.result}/>
+                    <Ingredient symbol={'?'} value={await PreparedIngredient.of(data.result, branch)}/>
                 </div>
             </div>
         );
