@@ -1,20 +1,13 @@
-export const SUPPORTED_BRANCHES = [
-    // TODO this one needs to be removed!
-    'feature-datagen-models',
-    '1.18.2',
-    '1.18.1',
-    '1.18',
-    '1.16.5',
-    '1.15',
-    '1.14',
-];
-
-export const DEFAULT_BRANCH = SUPPORTED_BRANCHES[0];
+export const EXCLUDED_VERSION_BRANCHES = new Set([
+    "1.7.10", "1.8.9", "1.9.4", "1.10.2", "1.11.2", "1.13pre", "1.13"
+]);
 
 export const MOD_ID = 'immersiveengineering';
 
-// TODO change back to main repo
-const REPO_BASE = 'https://raw.githubusercontent.com/malte0811/ImmersiveEngineering';
+export const REPO_OWNER = 'BluSunrize';
+export const REPO_NAME = 'ImmersiveEngineering';
+
+const REPO_BASE = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}`;
 
 export const getAssetPath = (branch) => `${REPO_BASE}/${branch}/src/main/resources/assets/immersiveengineering/`;
 

@@ -8,7 +8,7 @@ import {
     prefixManual, SUPPORTED_LANGUAGES,
     translate,
 } from "./localization";
-import {DEFAULT_BRANCH, getAssetPath, getManualPath, SUPPORTED_BRANCHES} from "./resources";
+import {EXCLUDED_VERSION_BRANCHES, getAssetPath, getManualPath, REPO_NAME, REPO_OWNER} from "./resources";
 import {useNavigate, useParams} from "react-router";
 import {SelectDropdown} from "./generic_elements";
 
@@ -75,6 +75,31 @@ export function verifyEntryExists(branch, lang, key) {
     return new Promise(resolve => resolve());
 }
 
+const LATEST_BRANCH = 'latest';
+const STABLE_BRANCH = 'stable';
+
+let supportedBranches;
+let stableBranch;
+
+async function fetchSupportedBranches() {
+    const baseURL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
+    const repoResponse = fetch(baseURL);
+    const branchesResponse = fetch(baseURL+'/branches');
+    const branchesJSON = await (await branchesResponse).json();
+    supportedBranches = [];
+    for (const branchJSON of branchesJSON) {
+        const branchName = branchJSON.name;
+        if (branchName.startsWith("1.") && !EXCLUDED_VERSION_BRANCHES.has(branchName)) {
+            supportedBranches.push(branchName);
+        }
+    }
+    supportedBranches.sort().reverse();
+    const repoJSON = await (await repoResponse).json();
+    stableBranch = repoJSON['default_branch']
+    if (!supportedBranches.includes(stableBranch)) {
+        stableBranch = supportedBranches[0];
+    }
+}
 
 function App() {
     return (
@@ -83,28 +108,28 @@ function App() {
                 <Route path={':lang/*'}>
                     <Route path={':branch/*'} element={<ManualWrapper/>}/>
                 </Route>
-                <Route path="*" element={<Navigate to={`${DEFAULT_LANGUAGE}/${DEFAULT_BRANCH}`}/>}/>
+                <Route path="*" element={<Navigate to={`${DEFAULT_LANGUAGE}/${STABLE_BRANCH}`}/>}/>
             </Routes>
         </div>
     );
 }
 
-function LanguageChoice() {
-    let params = useParams();
+function LanguageChoice(props) {
+    const currentBranch = props.branch;
+    const currentLang = props.lang;
     let navigate = useNavigate();
     if (useParams()['*'])
         return null;
     return <header>
-        <SelectDropdown label="Version: " defaultValue={params['branch']} options={SUPPORTED_BRANCHES}
+        <SelectDropdown label="Version: " defaultValue={currentBranch} options={supportedBranches}
                         onChange={(val) => {
-                            navigate(`/${params['lang']}/${val}`);
+                            navigate(`/${currentLang}/${val}`);
                             window.location.reload(false);
                         }}/>
         <br/>
-        <SelectDropdown label="Language: " defaultValue={params['lang']} options={SUPPORTED_LANGUAGES}
+        <SelectDropdown label="Language: " defaultValue={currentLang} options={SUPPORTED_LANGUAGES}
                         onChange={(val) => {
-                            navigate(`/${params['lang']}/${val}`);
-                            navigate(`/${val}/${params['branch']}`);
+                            navigate(`/${val}/${currentBranch}`);
                             window.location.reload(false);
                         }}/>
     </header>
@@ -130,7 +155,7 @@ class Manual extends React.Component {
             <div className="content">
                 <ManualContent initialized={this.state.initialized}/>
             </div>
-            <LanguageChoice/>
+            {this.state.initialized && <LanguageChoice branch={this.state.realBranch} lang={this.props.lang}/>}
         </>);
     }
 
@@ -141,6 +166,12 @@ class Manual extends React.Component {
         const getFiles = async () => {
             // clean up
             clearManual();
+            await fetchSupportedBranches();
+            if (branch === LATEST_BRANCH) {
+                branch = supportedBranches[0];
+            } else if (branch === STABLE_BRANCH) {
+                branch = stableBranch;
+            }
             // get english default translation file
             await fetch(`${getAssetPath(branch)}lang/${DEFAULT_LANGUAGE}.json`)
                 .then(res => res.json())
@@ -161,7 +192,8 @@ class Manual extends React.Component {
             await Promise.all(entryPromises);
             // finally update component
             this.setState({
-                initialized: true
+                initialized: true,
+                realBranch: branch,
             });
         };
         getFiles();
