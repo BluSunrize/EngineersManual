@@ -116,26 +116,15 @@ function ingredientTooltip(ingredient) {
     return '';
 }
 
-// TODO cycle through multiple for tags?
-function getItemToShow(ingredient, branch) {
+function getItemsToShow(ingredient, branch) {
     if (ingredient['item']) {
-        return decomposeResourceLocation(ingredient['item']);
+        return [decomposeResourceLocation(ingredient['item'])];
     } else if (ingredient['tag']) {
         const basePath = getTagPath(branch);
         const tagParts = decomposeResourceLocation(ingredient['tag']);
         return fetch(`${basePath}/${tagParts.domain}/${tagParts.name}.json`)
             .then(res => res.json())
-            .then(res => {
-                // Prefer IE items: we do not have icons for vanilla items
-                for (let itemInTag of res) {
-                    if (itemInTag.startsWith(MOD_ID)) {
-                        return itemInTag;
-                    }
-                }
-                // Fall back to non-IE item
-                return res[0];
-            })
-            .then(res => decomposeResourceLocation(res))
+            .then(res => res.map(decomposeResourceLocation))
             .catch(err => undefined);
     }
     return undefined;
@@ -148,28 +137,38 @@ function unwrapIngredient(ingredient) {
     return ingredient;
 }
 
-class PreparedIngredient {
-    rawData;
+class IngredientOption {
     itemImage;
-    itemToShow;
     tooltip;
 
-    constructor(rawData, itemToShow, itemImage, tooltip) {
-        this.rawData = rawData;
-        this.itemToShow = itemToShow;
+    constructor(itemImage, tooltip) {
         this.itemImage = itemImage;
         this.tooltip = tooltip;
+    }
+}
+
+class PreparedIngredient {
+    count;
+    options;
+
+    constructor(count, options) {
+        this.count = count;
+        this.options = options;
     }
 
     static async of(ingredientJson, branch) {
         ingredientJson = unwrapIngredient(ingredientJson);
         if (ingredientJson) {
-            const item = await getItemToShow(ingredientJson, branch);
-            const itemImage = await imageForItem(item, branch);
-            return new PreparedIngredient(ingredientJson, item, itemImage, ingredientTooltip(ingredientJson));
-        } else {
-            return undefined;
+            const items = await getItemsToShow(ingredientJson, branch);
+            if (items) {
+                const optionPromises = items.map(async item => {
+                    const itemImage = await imageForItem(item, branch);
+                    return new IngredientOption(itemImage, ingredientTooltip(ingredientJson));
+                });
+                return new PreparedIngredient(ingredientJson['count'] || 1, await Promise.all(optionPromises));
+            }
         }
+        return undefined;
     }
 }
 
@@ -283,10 +282,19 @@ async function imageForItem(item, branch) {
 }
 
 function Ingredient(props) {
+    const [optionId, setOptionId] = React.useState(0);
     let ingredient = props['value'];
-    if (!ingredient || !ingredient.rawData)
+    React.useEffect(() => {
+        if (!ingredient || ingredient.options.length < 2) {
+            return;
+        }
+        const timerId = setInterval(() => setOptionId((optionId + 1) % ingredient.options.length), 1000);
+        return () => clearInterval(timerId);
+    }, [props.value, ingredient, optionId]);
+    if (!ingredient)
         return <div className="item empty"/>;
     else {
+        const currentOption = ingredient.options[optionId];
         return <div className="item" onMouseMove={
             event => {
                 let tooltip = event.currentTarget.querySelector('.tooltip');
@@ -297,9 +305,9 @@ function Ingredient(props) {
                 }
             }
         }>
-            {ingredient.itemImage ? ingredient.itemImage : <span className="symbol">{props.symbol}</span>}
-            {ingredient.rawData['count'] && <span className="count">{ingredient.rawData['count']}</span>}
-            <Tooltip text={ingredient.tooltip}/>
+            {currentOption.itemImage ? currentOption.itemImage : <span className="symbol">{props.symbol}</span>}
+            {ingredient.count > 1 && <span className="count">{ingredient.count}</span>}
+            <Tooltip text={currentOption.tooltip}/>
         </div>;
     }
 }
