@@ -86,14 +86,11 @@ async function fetchSupportedBranches() {
     const repoResponse = fetch(baseURL);
     const branchesResponse = fetch(baseURL+'/branches');
     const branchesJSON = await (await branchesResponse).json();
-    supportedBranches = [];
-    for (const branchJSON of branchesJSON) {
-        const branchName = branchJSON.name;
-        if (branchName.startsWith("1.") && !EXCLUDED_VERSION_BRANCHES.has(branchName)) {
-            supportedBranches.push(branchName);
-        }
-    }
-    supportedBranches.sort().reverse();
+    supportedBranches = branchesJSON
+        .map(b => b.name)
+        .filter(name => name.startsWith('1.') && !EXCLUDED_VERSION_BRANCHES.has(name))
+        .sort()
+        .reverse();
     const repoJSON = await (await repoResponse).json();
     stableBranch = repoJSON['default_branch']
     if (!supportedBranches.includes(stableBranch)) {

@@ -1,5 +1,5 @@
 export const EXCLUDED_VERSION_BRANCHES = new Set([
-    "1.7.10", "1.8.9", "1.9.4", "1.10.2", "1.11.2", "1.13pre", "1.13"
+    '1.7.10', '1.8.9', '1.9.4', '1.10.2', '1.11.2', '1.13pre', '1.13'
 ]);
 
 export const MOD_ID = 'immersiveengineering';

@@ -223,11 +223,7 @@ class Recipe extends React.Component {
             recipeData['key'] = newKeys;
             recipeData['pattern'] = json['pattern'];
         } else if ('ingredients' in json) {
-            let newIngredients = [];
-            for (const ingredient of json.ingredients) {
-                newIngredients.push(await PreparedIngredient.of(ingredient, branch));
-            }
-            recipeData['ingredients'] = newIngredients;
+            recipeData['ingredients'] = await Promise.all(json.ingredients.map(e => PreparedIngredient.of(e, branch)));
         }
         recipeData['result'] = await PreparedIngredient.of(json.result, branch);
         return <Recipe name={key} key={key} data={recipeData}/>;
@@ -293,7 +289,7 @@ async function imageForItem(item, branch) {
     const iconPath = basePath + item.domain + '/' + item.name + '.png';
     const blob = await fetchBlob(iconPath);
     if (blob) {
-        return <img className="item" alt={item.domain + ':' + item.name} src={URL.createObjectURL(blob)}/>;
+        return <img className="item-icon" alt={item.domain + ':' + item.name} src={URL.createObjectURL(blob)}/>;
     } else {
         return undefined;
     }
@@ -361,10 +357,7 @@ class Blueprint extends React.Component {
 
     static async buildRecipe(name, data, branch) {
         let cols = data.inputs.length === 1 ? 1 : data.inputs.length < 5 ? 2 : 3;
-        let ingredients = [];
-        for (const e of data.inputs) {
-            ingredients.push(await PreparedIngredient.of(e, branch));
-        }
+        let ingredients = await Promise.all(data.inputs.map(e => PreparedIngredient.of(e, branch)));
         return (
             <div className="recipe" name={name}>
                 <div className="blueprint-ingredient">
