@@ -91,29 +91,28 @@ function decomposeResourceLocation(fullName) {
     return {domain: domain, name: name};
 }
 
-function ingredientTooltip(ingredient) {
-    if (ingredient['tag'])
-        return (<>
-            <span>Tag:</span><br/>
-            <span>{ingredient['tag']}</span>
-        </>);
-    else if (ingredient['item']) {
-        const nameParts = decomposeResourceLocation(ingredient['item']);
-        let domain;
-        let name;
-        if (nameParts.domain === MOD_ID) {
-            name = translateIEItem(nameParts.name);
-            domain = 'Immersive Engineering';
-        } else {
-            domain = upperCaseName(nameParts.domain);
-            name = upperCaseName(nameParts.name);
+function ingredientTooltip(currentItemParts, ingredient) {
+    let tagInfo;
+    if (ingredient['tag']) {
+        tagInfo = <span>Tag: {ingredient['tag']}</span>;
+        if (!currentItemParts) {
+            return tagInfo;
         }
-        return (<>
-            <span>{name}</span><br/>
-            <span className="domain formatting_o">{domain}</span>
-        </>);
     }
-    return '';
+    let domain;
+    let name;
+    if (currentItemParts.domain === MOD_ID) {
+        name = translateIEItem(currentItemParts.name);
+        domain = 'Immersive Engineering';
+    } else {
+        domain = upperCaseName(currentItemParts.domain);
+        name = upperCaseName(currentItemParts.name);
+    }
+    return (<>
+        <span>{name}</span><br/>
+        <span className="domain formatting_o">{domain}</span>
+        {tagInfo && <br/>} {tagInfo}
+    </>);
 }
 
 function getItemsToShow(ingredient, branch) {
@@ -160,13 +159,17 @@ class PreparedIngredient {
         ingredientJson = unwrapIngredient(ingredientJson);
         if (ingredientJson) {
             const items = await getItemsToShow(ingredientJson, branch);
+            let optionPromises;
             if (items) {
-                const optionPromises = items.map(async item => {
+                optionPromises = items.map(async item => {
                     const itemImage = await imageForItem(item, branch);
-                    return new IngredientOption(itemImage, ingredientTooltip(ingredientJson));
+                    return new IngredientOption(itemImage, ingredientTooltip(item, ingredientJson));
                 });
-                return new PreparedIngredient(ingredientJson['count'] || 1, await Promise.all(optionPromises));
+            } else {
+                // Support for old branches without tag data
+                optionPromises = [new IngredientOption(undefined, ingredientTooltip(undefined, ingredientJson))];
             }
+            return new PreparedIngredient(ingredientJson['count'] || 1, await Promise.all(optionPromises));
         }
         return undefined;
     }
