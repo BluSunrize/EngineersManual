@@ -14,6 +14,21 @@ const SPECIAL_ELEMENT_HEIGHTS = {
     multiblock: () => 5,
 };
 
+function makeCache(responseProcessor) {
+    const cache = {};
+    return (url) => {
+        if (!(url in cache)) {
+            cache[url] = fetch(url)
+                .then(response => response.ok ? responseProcessor(response) : undefined)
+                .catch(() => undefined);
+        }
+        return cache[url];
+    };
+}
+
+const fetchJSON = makeCache(r => r.json());
+const fetchBlob = makeCache(r => r.blob());
+
 export function loadSpecialElement(branch, element) {
     // normal recipes
     if (element['type'] === 'crafting') {
@@ -121,8 +136,7 @@ function getItemsToShow(ingredient, branch) {
     } else if (ingredient['tag']) {
         const basePath = getTagPath(branch);
         const tagParts = decomposeResourceLocation(ingredient['tag']);
-        return fetch(`${basePath}/${tagParts.domain}/${tagParts.name}.json`)
-            .then(res => res.json())
+        return fetchJSON(`${basePath}/${tagParts.domain}/${tagParts.name}.json`)
             .then(res => res.map(decomposeResourceLocation))
             .catch(err => undefined);
     }
@@ -196,25 +210,27 @@ class Recipe extends React.Component {
     }
 
     static async loadRecipe(branch, key) {
-        let json = await (await fetch(`${getRecipePath(branch)}${key}.json`)).json();
+        let json = await fetchJSON(`${getRecipePath(branch)}${key}.json`);
         if ('baseRecipe' in json) {
             json = json['baseRecipe'];
         }
+        const recipeData = {};
         if ('pattern' in json) {
-            let newKey = {};
+            let newKeys = {};
             for (const key in json.key) {
-                newKey[key] = await PreparedIngredient.of(json.key[key], branch);
+                newKeys[key] = await PreparedIngredient.of(json.key[key], branch);
             }
-            json.key = newKey;
+            recipeData['key'] = newKeys;
+            recipeData['pattern'] = json['pattern'];
         } else if ('ingredients' in json) {
             let newIngredients = [];
             for (const ingredient of json.ingredients) {
                 newIngredients.push(await PreparedIngredient.of(ingredient, branch));
             }
-            json.ingredients = newIngredients;
+            recipeData['ingredients'] = newIngredients;
         }
-        json.result = await PreparedIngredient.of(json.result, branch);
-        return <Recipe name={key} key={key} data={json}/>;
+        recipeData['result'] = await PreparedIngredient.of(json.result, branch);
+        return <Recipe name={key} key={key} data={recipeData}/>;
     }
 
     static buildShapedRecipe(name, data) {
@@ -275,9 +291,8 @@ class MultiRecipe extends React.Component {
 async function imageForItem(item, branch) {
     const basePath = getIconPath(branch);
     const iconPath = basePath + item.domain + '/' + item.name + '.png';
-    const response = await fetch(iconPath);
-    if (response.ok) {
-        const blob = await response.blob();
+    const blob = await fetchBlob(iconPath);
+    if (blob) {
         return <img className="item" alt={item.domain + ':' + item.name} src={URL.createObjectURL(blob)}/>;
     } else {
         return undefined;
@@ -339,8 +354,7 @@ class Blueprint extends React.Component {
         return Promise.all(recipes.map(
             obj => obj['item'].split(':').pop()
         ).map(
-            key => fetch(`${getRecipePath(branch)}blueprint/${key}.json`)
-                .then(res => res.json())
+            key => fetchJSON(`${getRecipePath(branch)}blueprint/${key}.json`)
                 .then(out => Blueprint.buildRecipe(key, out, branch))
         )).then(values => <Blueprint recipes={values}/>);
     }
