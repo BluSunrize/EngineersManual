@@ -47,6 +47,12 @@ div.crafting-arrow {
   @include arrow-right();
 }
 
+img.item-icon {
+  margin: 2px;
+  width: 8vmin;
+  height: 8vmin;
+}
+
 div.item {
   text-align: center;
   background: rgba(0, 0, 0, 0.1);

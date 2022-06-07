@@ -1,20 +1,25 @@
-export const SUPPORTED_BRANCHES = [
-    '1.18.1',
-    '1.18',
-    '1.16.5',
-    '1.15',
-    '1.14',
-];
-
-export const DEFAULT_BRANCH = SUPPORTED_BRANCHES[0];
+export const EXCLUDED_VERSION_BRANCHES = new Set([
+    '1.7.10', '1.8.9', '1.9.4', '1.10.2', '1.11.2', '1.13pre', '1.13'
+]);
 
 export const MOD_ID = 'immersiveengineering';
 
-export const getAssetPath = (branch) => `https://raw.githubusercontent.com/BluSunrize/ImmersiveEngineering/${branch}/src/main/resources/assets/immersiveengineering/`;
+export const REPO_OWNER = 'BluSunrize';
+export const REPO_NAME = 'ImmersiveEngineering';
+
+const REPO_BASE = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}`;
+
+export const getAssetPath = (branch) => `${REPO_BASE}/${branch}/src/main/resources/assets/immersiveengineering/`;
 
 export const getManualPath = (branch) => getAssetPath(branch)+'manual/';
 
-export const getRecipePath = (branch) => `https://raw.githubusercontent.com/BluSunrize/ImmersiveEngineering/${branch}/src/generated/resources/data/immersiveengineering/recipes/`
+export const getRecipePath = (branch) => `${REPO_BASE}/${branch}/src/generated/resources/data/immersiveengineering/recipes/`
+
+export const getDataExportPath = (branch) => `${REPO_BASE}/manual-data/${branch}/`
+
+export const getIconPath = (branch) => getDataExportPath(branch)+'icons/'
+
+export const getTagPath = (branch) => getDataExportPath(branch)+'tags'
 
 /** This is super hacky and probably a bad idea, but it's holding so far! */
 export function reactSetStateWrapper(element, state, mountKeyword = 'loaded') {
