@@ -347,12 +347,18 @@ class Blueprint extends React.Component {
     }
 
     static loadRecipes(branch, recipes) {
-        return Promise.all(recipes.map(
-            obj => obj['item'].split(':').pop()
-        ).map(
-            key => fetchJSON(`${getRecipePath(branch)}blueprint/${key}.json`)
-                .then(out => Blueprint.buildRecipe(key, out, branch))
-        )).then(values => <Blueprint recipes={values}/>);
+        return Promise.all(recipes.map(obj => {
+            let key;
+            let path;
+            if (typeof obj === 'string') {
+                key = obj.split('/').pop();
+                path = `${getRecipePath(branch)}${obj}.json`;
+            } else if (typeof obj === 'object' && 'item' in obj) {
+                key = obj['item'].split(':').pop();
+                path = `${getRecipePath(branch)}blueprint/${key}.json`;
+            }
+            return fetchJSON(path).then(out => Blueprint.buildRecipe(key, out, branch));
+        })).then(values => <Blueprint recipes={values}/>);
     }
 
     static async buildRecipe(name, data, branch) {
