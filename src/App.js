@@ -8,7 +8,7 @@ import {
     prefixManual, SUPPORTED_LANGUAGES,
     translate,
 } from "./localization";
-import {EXCLUDED_VERSION_BRANCHES, getAssetPath, getManualPath, REPO_NAME, REPO_OWNER} from "./resources";
+import {EXCLUDED_VERSION_BRANCHES, getAssetPath, getGeneratedAssetPath, getManualPath, REPO_NAME, REPO_OWNER} from "./resources";
 import {useNavigate, useParams} from "react-router";
 import {SelectDropdown} from "./generic_elements";
 
@@ -170,11 +170,15 @@ class Manual extends React.Component {
                 branch = stableBranch;
             }
             // get english default translation file
-            await fetch(`${getAssetPath(branch)}lang/${DEFAULT_LANGUAGE}.json`)
+            await fetch(`${getGeneratedAssetPath(branch)}lang/${DEFAULT_LANGUAGE}.json`)
+                // fallback to base path
+                .then(res => res.ok ? res : fetch(`${getAssetPath(branch)}lang/${DEFAULT_LANGUAGE}.json`))
                 .then(res => res.json())
                 .then(out => addTranslationMultiple(out));
             // get specific translation file
-            await fetch(`${getAssetPath(branch)}lang/${lang}.json`)
+            await fetch(`${getGeneratedAssetPath(branch)}lang/${lang}.json`)
+                // fallback to base path
+                .then(res => res.ok ? res : fetch(`${getAssetPath(branch)}lang/${lang}.json`))
                 .then(res => res.json())
                 .then(out => addTranslationMultiple(out));
             // then get the manual index

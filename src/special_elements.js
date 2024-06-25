@@ -133,19 +133,23 @@ function ingredientTooltip(currentItemParts, ingredient) {
 function getItemsToShow(ingredient, branch) {
     if (ingredient['item']) {
         return [decomposeResourceLocation(ingredient['item'])];
+    } else if (ingredient['id']) {
+        return [decomposeResourceLocation(ingredient['id'])];
     } else if (ingredient['tag']) {
         const basePath = getTagPath(branch);
         const tagParts = decomposeResourceLocation(ingredient['tag']);
         return fetchJSON(`${basePath}/${tagParts.domain}/${tagParts.name}.json`)
             .then(res => res.map(decomposeResourceLocation))
             .catch(err => undefined);
+    } else if (Array.isArray(ingredient)) {
+        return ingredient.flatMap(ing => getItemsToShow(ing, branch));
     }
     return undefined;
 }
 
 function unwrapIngredient(ingredient) {
-    while (ingredient && ingredient['base_ingredient']) {
-        ingredient = ingredient['base_ingredient'];
+    while (ingredient && (ingredient['base_ingredient'] || ingredient['basePredicate'])) {
+        ingredient = ingredient['base_ingredient']??ingredient['basePredicate'];
     }
     return ingredient;
 }
@@ -213,6 +217,8 @@ class Recipe extends React.Component {
         let json = await fetchJSON(`${getRecipePath(branch)}${key}.json`);
         if ('baseRecipe' in json) {
             json = json['baseRecipe'];
+        } else if ('value' in json) {
+            json = json['value'];
         }
         const recipeData = {};
         if ('pattern' in json) {
@@ -308,7 +314,7 @@ function Ingredient(props) {
     if (!ingredient)
         return <div className="item empty"/>;
     else {
-        const currentOption = ingredient.options[optionId];
+        const currentOption = ingredient.options[optionId % ingredient.options.length];
         return <div className="item" onMouseMove={
             event => {
                 let tooltip = event.currentTarget.querySelector('.tooltip');

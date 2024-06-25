@@ -11,6 +11,8 @@ const REPO_BASE = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}`
 
 export const getAssetPath = (branch) => `${REPO_BASE}/${branch}/src/main/resources/assets/immersiveengineering/`;
 
+export const getGeneratedAssetPath = (branch) => `${REPO_BASE}/${branch}/src/generated/resources/assets/immersiveengineering/`;
+
 export const getManualPath = (branch) => getAssetPath(branch)+'manual/';
 
 export const getRecipePath = (branch) => `${REPO_BASE}/${branch}/src/generated/resources/data/immersiveengineering/recipes/`
