@@ -131,7 +131,11 @@ function ingredientTooltip(currentItemParts, ingredient) {
 }
 
 function getItemsToShow(ingredient, branch) {
-    if (ingredient['item']) {
+    if (ingredient['type'] === 'immersiveengineering:fluid') {
+        return [getFluidBucket(ingredient['tag'])];
+    } else if (ingredient['type'] === 'immersiveengineering:fluid_stack') {
+        return [getFluidBucket(ingredient['value']['tag'])];
+    }else if (ingredient['item']) {
         return [decomposeResourceLocation(ingredient['item'])];
     } else if (ingredient['id']) {
         return [decomposeResourceLocation(ingredient['id'])];
@@ -145,6 +149,14 @@ function getItemsToShow(ingredient, branch) {
         return ingredient.flatMap(ing => getItemsToShow(ing, branch));
     }
     return undefined;
+}
+
+function getFluidBucket(fluidTag) {
+    const tagParts = decomposeResourceLocation(fluidTag);
+    return {
+        domain: tagParts.domain!=='minecraft' ? 'immersiveengineering' : tagParts.domain,
+        name: `${tagParts.name}_bucket`
+    };
 }
 
 function unwrapIngredient(ingredient) {
